@@ -7,13 +7,11 @@ import 'package:pos_mobile_app/shared/app_theme.dart';
 import 'package:pos_mobile_app/shared/config.dart';
 
 class NewSale extends StatefulWidget {
-
   @override
   _NewSaleState createState() => _NewSaleState();
 }
 
 class _NewSaleState extends State<NewSale> {
-
   GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
 
   @override
@@ -76,7 +74,7 @@ class _NewSaleState extends State<NewSale> {
                               trailing: Container(
                                 padding: EdgeInsets.all(5),
                                 decoration: BoxDecoration(
-                                  color:' model.trailingString'.isNotEmpty
+                                  color: ' model.trailingString'.isNotEmpty
                                       ? Colors.yellow.shade600
                                       : Colors.red,
                                   shape: BoxShape.rectangle,
@@ -111,12 +109,14 @@ class _NewSaleState extends State<NewSale> {
                                   ),
                                 ),
                                 Container(
-                                  height: Config.getDeviceHeight(context) * 0.12,
+                                  height:
+                                      Config.getDeviceHeight(context) * 0.12,
                                   padding: EdgeInsets.only(top: 5),
                                   // decoration: BoxDecoration(border: Border.all(width: 2)),
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: getCategoryWidgets(/*model.lstCategory*/null),
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: getCategoryWidgets(
+                                        /*model.lstCategory*/ null),
                                   ),
                                 ),
                                 Container(
@@ -138,7 +138,8 @@ class _NewSaleState extends State<NewSale> {
                                     child: GridView.count(
                                       crossAxisCount: 4,
                                       children: getItemsWidgets(
-                                          /*model.lstItem*/null, 'categoryName'),
+                                          /*model.lstItem*/ null,
+                                          'categoryName'),
                                     ),
                                   ),
                                 ),
@@ -172,10 +173,10 @@ class _NewSaleState extends State<NewSale> {
                                   ),
                                 ),
                               ),
-                              child:/* model.order.itemList.length*/ 1 > 0
+                              child: /* model.order.itemList.length*/ 1 > 0
                                   ? ListView(
                                       children: getCartItemsWidgets(List.from(
-                                          /*model.order.itemList.reversed*/null)),
+                                          /*model.order.itemList.reversed*/ null)),
                                     )
                                   : Container(
                                       alignment: Alignment.bottomCenter,
@@ -188,7 +189,6 @@ class _NewSaleState extends State<NewSale> {
                                           ),
                                         ),
                                       ),
-
                                     ),
                             ),
                           ),
@@ -239,12 +239,10 @@ class _NewSaleState extends State<NewSale> {
         onNo: () => Navigator.of(context).pop(false),
         onYes: () =>
             // OrderController(model.orderType).launchAndReplacement(context)
-        true
-            ? isYes = true
-                : isYes = false);
+            true ? isYes = true : isYes = false);
 
     if (isYes && type) {
-      if (/*model.titleString*/''.isNotEmpty) {
+      if (/*model.titleString*/ ''.isNotEmpty) {
         Navigator.pop(context);
         return true;
       } else {
@@ -320,6 +318,7 @@ class _NewSaleState extends State<NewSale> {
       );
     });
     return widgets;*/
+    return [];
   }
 
   List<Widget> getItemsWidgets(List<dynamic> lstItem, String categoryName) {
@@ -458,6 +457,7 @@ class _NewSaleState extends State<NewSale> {
       }
     });
     return widgets;*/
+    return [];
   }
 
   List<Widget> getCartItemsWidgets(List<dynamic> lstItem) {
@@ -518,9 +518,8 @@ class _NewSaleState extends State<NewSale> {
       );
     });
     return widgets;*/
+    return [];
   }
 
-  void _onFloatingButtonPressed() async {
-  }
-
+  void _onFloatingButtonPressed() async {}
 }

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pos_mobile_app/bloc/login_bloc/login_bloc.dart';
+import 'package:pos_mobile_app/bloc/login_bloc/login_states.dart';
 import 'package:pos_mobile_app/shared/config.dart';
 
-
 class LoginScreen extends StatefulWidget {
-
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController deviceKey = TextEditingController();
@@ -20,9 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
   bool isOnlineDataLoaded = false;
 
-  // bool isLogin = false;
   bool _deviceKeyPresent = false;
-  bool _deviceKeyCheck = false;
   Icon _icon = Icon(Icons.visibility_off);
   String errorEmail = 'Invalid Email', errorPassword = 'Invalid Password';
   Color activeColor = Colors.yellow[700];
@@ -43,7 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
   @override
   initState() {
     super.initState();
@@ -51,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -113,150 +109,166 @@ class _LoginScreenState extends State<LoginScreen> {
                                         blurRadius: 20)
                                   ],
                                 ),
-                                child: Form(
-                                  key: _formKey,
-                                  autovalidate: _autoValidate,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            'Config.activeStatus',
-                                            style: GoogleFonts.ubuntuCondensed(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
-                                                letterSpacing: 1.0,
-                                                color: activeColor),
-                                          ),
-                                          Switch(
-                                            // value: Config.isSwitched,
-                                            // onChanged: _onSwitchTap,
-                                            activeTrackColor:
-                                                Colors.yellowAccent[600],
-                                            activeColor: Colors.yellow[700],
-                                            inactiveTrackColor:
-                                                Colors.grey[200],
-                                            inactiveThumbColor: Colors.grey,
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Container(
-                                              padding: EdgeInsets.all(5),
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom: BorderSide(
-                                                          color: Colors
-                                                              .grey[100]))),
-                                              child: TextField(
-                                                enabled: !_deviceKeyPresent,
-                                                decoration: InputDecoration(
-                                                  border: InputBorder.none,
-                                                  labelText: 'Device Key',
-                                                  labelStyle: TextStyle(
-                                                    color: Colors.grey[400],
-                                                  ),
-                                                  errorText:
-                                                      deviceKey.text != ''
-                                                          ? null
-                                                          : 'Required',
-                                                ),
-                                                textInputAction:
-                                                    TextInputAction.next,
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                controller: deviceKey,
-                                              ),
+                                child: BlocListener<LoginBloc, LoginState>(
+                                  listener: (context, state) {
+                                    if (state is LoginProcessing) {
+                                    } else if (state is LoginSuccessful) {
+                                    } else if (state is LoginFailed) {
+                                    } else if (state is LoginError) {}
+                                  },
+                                  child: Form(
+                                    key: _formKey,
+                                    autovalidate: _autoValidate,
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              'Config.activeStatus',
+                                              style:
+                                                  GoogleFonts.ubuntuCondensed(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 13,
+                                                      letterSpacing: 1.0,
+                                                      color: activeColor),
                                             ),
-                                          ),
-                                          FlatButton(
-                                            child: Text('SUBMIT'),
-                                            onPressed: null,
-                                          )
-                                        ],
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                                    color: Colors.grey[100]))),
-                                        child: TextFormField(
-                                          enabled: _deviceKeyPresent,
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            labelText: 'loginModel.hintEmail',
-                                            labelStyle: TextStyle(
-                                              color: Colors.grey[400],
-                                            ),
-                                          ),
-                                          textInputAction: TextInputAction.next,
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                          onFieldSubmitted: (value) {
-                                            FocusScope.of(context).nextFocus();
-                                          },
-                                          validator: (value) {
-                                            if (value.isEmpty ||
-                                                !value.contains('@')) {
-                                              return errorEmail;
-                                            }
-                                            return null;
-                                          },
-                                          controller: email,
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.all(5),
-                                        child: Stack(
-                                          children: <Widget>[
-                                            Positioned(
-                                              child: TextFormField(
-                                                enabled: _deviceKeyPresent,
-                                                decoration: InputDecoration(
-                                                  border: InputBorder.none,
-                                                  labelText:
-                                                      'loginModel.hintPassword',
-                                                  labelStyle: TextStyle(
-                                                    color: Colors.grey[400],
-                                                  ),
-                                                ),
-                                                obscureText: _obscureText,
-                                                textInputAction:
-                                                    TextInputAction.done,
-                                                keyboardType: TextInputType
-                                                    .visiblePassword,
-                                                onFieldSubmitted: (value) {
-                                                  FocusScope.of(context)
-                                                      .unfocus();
-                                                },
-                                                controller: password,
-                                                validator: (value) {
-                                                  if (value.isEmpty ||
-                                                      value.length <= 0) {
-                                                    return errorPassword;
-                                                  }
-                                                  return null;
-                                                },
-                                              ),
-                                            ),
-                                            Positioned(
-                                              right: 5,
-                                              child: IconButton(
-                                                icon: _icon,
-                                                color: Colors.grey,
-                                                onPressed: _toggle,
-                                              ),
+                                            Switch(
+                                              // value: Config.isSwitched,
+                                              // onChanged: _onSwitchTap,
+                                              activeTrackColor:
+                                                  Colors.yellowAccent[600],
+                                              activeColor: Colors.yellow[700],
+                                              inactiveTrackColor:
+                                                  Colors.grey[200],
+                                              inactiveThumbColor: Colors.grey,
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                padding: EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                        bottom: BorderSide(
+                                                            color: Colors
+                                                                .grey[100]))),
+                                                child: TextField(
+                                                  enabled: !_deviceKeyPresent,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    labelText: 'Device Key',
+                                                    labelStyle: TextStyle(
+                                                      color: Colors.grey[400],
+                                                    ),
+                                                    errorText:
+                                                        deviceKey.text != ''
+                                                            ? null
+                                                            : 'Required',
+                                                  ),
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  controller: deviceKey,
+                                                ),
+                                              ),
+                                            ),
+                                            FlatButton(
+                                              child: Text('SUBMIT'),
+                                              onPressed: null,
+                                            )
+                                          ],
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                              border: Border(
+                                                  bottom: BorderSide(
+                                                      color:
+                                                          Colors.grey[100]))),
+                                          child: TextFormField(
+                                            enabled: _deviceKeyPresent,
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              labelText: 'loginModel.hintEmail',
+                                              labelStyle: TextStyle(
+                                                color: Colors.grey[400],
+                                              ),
+                                            ),
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            keyboardType:
+                                                TextInputType.emailAddress,
+                                            onFieldSubmitted: (value) {
+                                              FocusScope.of(context)
+                                                  .nextFocus();
+                                            },
+                                            validator: (value) {
+                                              if (value.isEmpty ||
+                                                  !value.contains('@')) {
+                                                return errorEmail;
+                                              }
+                                              return null;
+                                            },
+                                            controller: email,
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.all(5),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Positioned(
+                                                child: TextFormField(
+                                                  enabled: _deviceKeyPresent,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    labelText:
+                                                        'loginModel.hintPassword',
+                                                    labelStyle: TextStyle(
+                                                      color: Colors.grey[400],
+                                                    ),
+                                                  ),
+                                                  obscureText: _obscureText,
+                                                  textInputAction:
+                                                      TextInputAction.done,
+                                                  keyboardType: TextInputType
+                                                      .visiblePassword,
+                                                  onFieldSubmitted: (value) {
+                                                    FocusScope.of(context)
+                                                        .unfocus();
+                                                  },
+                                                  controller: password,
+                                                  validator: (value) {
+                                                    if (value.isEmpty ||
+                                                        value.length <= 0) {
+                                                      return errorPassword;
+                                                    }
+                                                    return null;
+                                                  },
+                                                ),
+                                              ),
+                                              Positioned(
+                                                right: 5,
+                                                child: IconButton(
+                                                  icon: _icon,
+                                                  color: Colors.grey,
+                                                  onPressed: _toggle,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -315,5 +327,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
 }

@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -8,13 +6,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   double screenWidth;
   double screenHeight;
 
   @override
   Widget build(BuildContext context) {
-
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
 
@@ -39,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               Text(
-                'Splash Text',
+                'KBC POS',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 30,

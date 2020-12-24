@@ -21,6 +21,8 @@ dependencies:
   flutter_spinkit: ^4.0.0
   progress_dialog: ^1.2.4
   draggable_floating_button: ^0.1.1
+  equatable: ^1.2.4
+  flutter_bloc: ^6.0.4
 
 
 

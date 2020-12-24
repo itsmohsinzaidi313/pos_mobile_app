@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile_app/shared/app_theme.dart';
 import 'package:pos_mobile_app/shared/config.dart';
-import 'package:toast/toast.dart';
 
 class PaymentScreen extends StatefulWidget {
 
