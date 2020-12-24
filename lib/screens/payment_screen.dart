@@ -16,7 +16,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
     new TextEditingController(),
     new TextEditingController()
   ];
-  // List<bool> check = [dueAmount, credit, discount];
+
+//List<bool> check = [Amount, credit number, discount];
   List<bool> check = [false, false, false];
   double discount = 0.0;
   String _type;
@@ -257,7 +258,32 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget getWidget(String type) {
-    if (type == '2') {
+    if (type == '1') {
+      return Container(
+        margin: EdgeInsets.only(
+          top: 20,
+        ),
+        child: Card(
+          color: Colors.grey[100],
+          child: ListTile(
+            leading: Icon(Icons.monetization_on, color: Colors.yellow[700]),
+            title: TextField(
+              keyboardType: TextInputType.number,
+              readOnly: true,
+              controller: controllers[0],
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.amberAccent, width: 1),
+                ),
+                hintText: 'Amount',
+                errorText: check[0] ? 'Required' : null,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    else if (type == '2') {
       return Container(
         margin: EdgeInsets.only(
           top: 20,
@@ -278,30 +304,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                   hintText: 'Credit Number',
                   errorText: check[1] ? 'Required' : null),
-            ),
-          ),
-        ),
-      );
-    } else if (type == '1') {
-      return Container(
-        margin: EdgeInsets.only(
-          top: 20,
-        ),
-        child: Card(
-          color: Colors.grey[100],
-          child: ListTile(
-            leading: Icon(Icons.monetization_on, color: Colors.yellow[700]),
-            title: TextField(
-              keyboardType: TextInputType.number,
-              readOnly: true,
-              controller: controllers[0],
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.amberAccent, width: 1),
-                ),
-                hintText: 'Amount',
-                errorText: check[0] ? 'Required' : null,
-              ),
             ),
           ),
         ),

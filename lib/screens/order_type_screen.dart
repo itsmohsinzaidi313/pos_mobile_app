@@ -9,8 +9,6 @@ class OrderTypeScreen extends StatefulWidget {
 }
 
 class _OrderTypeScreenState extends State<OrderTypeScreen> {
-
-
   GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
   int _viewType = 0;
@@ -59,10 +57,11 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
       backgroundColor: Colors.grey[200],
       key: _key,
       appBar: AppTheme.appBarNormal(
-          appBarTitle: 'Order Type',
-          appBarBgColor: AppTheme.appBarColor,
-          appBarElevation: 0.0,
-          context: context),
+        appBarTitle: 'Order Type',
+        appBarBgColor: AppTheme.appBarColor,
+        appBarElevation: 0.0,
+        context: context,
+      ),
       body: Container(
         height: Config.getDeviceHeight(context),
         width: Config.getDeviceWidth(context),
@@ -201,6 +200,7 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
 
   int gridViewType;
   bool isWaiterSelected = false;
+
   // int listLength = DataLists.instance.listTables.length;
 
   Widget getLayout(int viewType) {
@@ -235,14 +235,15 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                               cursorColor: Colors.yellow[700],
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
-                                  icon: Icon(
-                                    Icons.group,
-                                    color: Colors.yellow.shade800,
-                                    size: 20,
-                                  ),
-                                  hintText: 'Persons',
-                                  border: InputBorder.none,
-                                  errorText: check[1] ? errorMsg : null),
+                                icon: Icon(
+                                  Icons.group,
+                                  color: Colors.yellow.shade800,
+                                  size: 20,
+                                ),
+                                hintText: 'Persons',
+                                border: InputBorder.none,
+                                errorText: check[1] ? errorMsg : null,
+                              ),
                             ),
                           ),
                         ),
@@ -271,7 +272,8 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                   color: Colors.white70,
                   child: GridView(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4),
+                      crossAxisCount: 4,
+                    ),
                     children: getGridViewWidget(viewType: 1 /* 1 or 2*/),
                   ),
                 ),
@@ -309,14 +311,15 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                           controller: controllers[3],
                           cursorColor: Colors.yellow.shade700,
                           decoration: InputDecoration(
-                              icon: Icon(
-                                Icons.dialpad,
-                                color: Colors.yellow.shade800,
-                                size: 20,
-                              ),
-                              hintText: 'Contact',
-                              border: InputBorder.none,
-                              errorText: check[3] ? errorMsg : null),
+                            icon: Icon(
+                              Icons.dialpad,
+                              color: Colors.yellow.shade800,
+                              size: 20,
+                            ),
+                            hintText: 'Contact',
+                            border: InputBorder.none,
+                            errorText: check[3] ? errorMsg : null,
+                          ),
                         ),
                       ),
                       trailing: Container(
@@ -356,24 +359,27 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                           controller: controllers[2],
                           cursorColor: Colors.yellow.shade700,
                           decoration: InputDecoration(
-                              icon: Icon(
-                                Icons.person,
-                                size: 20,
-                                color: Colors.yellow.shade800,
-                              ),
-                              border: InputBorder.none,
-                              hintText: 'Name',
-                              errorText: check[2] ? errorMsg : null),
+                            icon: Icon(
+                              Icons.person,
+                              size: 20,
+                              color: Colors.yellow.shade800,
+                            ),
+                            border: InputBorder.none,
+                            hintText: 'Name',
+                            errorText: check[2] ? errorMsg : null,
+                          ),
                         ),
                       ),
                     ),
                     ListTile(
                       title: FlatButton(
-                        child:
-                            Text('OK', style: TextStyle(color: Colors.white)),
+                        child: Text(
+                          'OK',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         onPressed: takeawaySearchButton
                             ? () {
-                          ///If all the takeaway fields are validated then navigate to new sale screen
+                                ///If all the takeaway fields are validated then navigate to new sale screen
                               }
                             : null,
                         color: takeawaySearchButton ? Colors.redAccent : null,
@@ -416,14 +422,15 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                           cursorColor: Colors.yellow.shade700,
                           controller: controllers[5],
                           decoration: InputDecoration(
-                              icon: Icon(
-                                Icons.dialpad,
-                                size: 20,
-                                color: Colors.yellow.shade800,
-                              ),
-                              hintText: 'Contact',
-                              border: InputBorder.none,
-                              errorText: check[5] ? 'Required' : null),
+                            icon: Icon(
+                              Icons.dialpad,
+                              size: 20,
+                              color: Colors.yellow.shade800,
+                            ),
+                            hintText: 'Contact',
+                            border: InputBorder.none,
+                            errorText: check[5] ? 'Required' : null,
+                          ),
                         ),
                       ),
                       trailing: Container(
@@ -463,14 +470,15 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                           controller: controllers[4],
                           cursorColor: Colors.yellow.shade700,
                           decoration: InputDecoration(
-                              icon: Icon(
-                                Icons.person,
-                                size: 20,
-                                color: Colors.yellow.shade800,
-                              ),
-                              hintText: 'Name',
-                              border: InputBorder.none,
-                              errorText: check[4] ? 'Required' : null),
+                            icon: Icon(
+                              Icons.person,
+                              size: 20,
+                              color: Colors.yellow.shade800,
+                            ),
+                            hintText: 'Name',
+                            border: InputBorder.none,
+                            errorText: check[4] ? 'Required' : null,
+                          ),
                         ),
                       ),
                     ),
@@ -492,14 +500,15 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                           controller: controllers[6],
                           cursorColor: Colors.yellow.shade700,
                           decoration: InputDecoration(
-                              icon: Icon(
-                                Icons.home,
-                                size: 20,
-                                color: Colors.yellow.shade800,
-                              ),
-                              hintText: 'Address',
-                              border: InputBorder.none,
-                              errorText: check[4] ? 'Required' : null),
+                            icon: Icon(
+                              Icons.home,
+                              size: 20,
+                              color: Colors.yellow.shade800,
+                            ),
+                            hintText: 'Address',
+                            border: InputBorder.none,
+                            errorText: check[4] ? 'Required' : null,
+                          ),
                         ),
                       ),
                     ),
@@ -511,8 +520,8 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                         ),
                         onPressed: deliverySearchButton
                             ? () {
-                          ///If all the delivery fields are validated then navigate to new sale screen
-                        }
+                                ///If all the delivery fields are validated then navigate to new sale screen
+                              }
                             : null,
                         color: deliverySearchButton ? Colors.redAccent : null,
                       ),
@@ -555,11 +564,11 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
         }*/
 
       ///generating tables list
-        listWidget.add(
-          Card(
-            elevation: 10,
-            color: Colors.grey.shade100,
-            child: InkWell(
+      listWidget.add(
+        Card(
+          elevation: 10,
+          color: Colors.grey.shade100,
+          child: InkWell(
               child: Stack(
                 children: [
                   Positioned(
@@ -583,18 +592,19 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                       text: TextSpan(
                         text: 'Capacity: ',
                         style: GoogleFonts.ubuntuCondensed(
-                            color: Colors.grey.shade700,
-                            fontSize: 15,
-                            letterSpacing: 1.0,
-                            wordSpacing: 1.0,
+                          color: Colors.grey.shade700,
+                          fontSize: 15,
+                          letterSpacing: 1.0,
+                          wordSpacing: 1.0,
                         ),
                         children: <TextSpan>[
-                      TextSpan(
-                      text: 'element.sitCapacity',
-                        style: GoogleFonts.ubuntuCondensed(
-                            color: Colors.grey.shade500,
-                            fontSize: 15,
-                            fontWeight: FontWeight.normal),),
+                          TextSpan(
+                            text: 'element.sitCapacity',
+                            style: GoogleFonts.ubuntuCondensed(
+                                color: Colors.grey.shade500,
+                                fontSize: 15,
+                                fontWeight: FontWeight.normal),
+                          ),
                         ],
                       ),
                     ),
@@ -636,21 +646,17 @@ class _OrderTypeScreenState extends State<OrderTypeScreen> {
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.hourglass_empty
-                      ),
+                      child: Icon(Icons.hourglass_empty),
                     ),
                   ),
                 ],
               ),
-              onTap: (){
+              onTap: () {
                 ///selecting table
-              }
-            ),
-          ),
-        );
+              }),
+        ),
+      );
     } else if (viewType == 2) {
-
       ///adding back button manually in the waiter list
       ///and generating waiter list
 /*      listWidget.add(Card(

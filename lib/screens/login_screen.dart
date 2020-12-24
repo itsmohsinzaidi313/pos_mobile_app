@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile_app/bloc/login_bloc/login_bloc.dart';
+import 'package:pos_mobile_app/bloc/login_bloc/login_events.dart';
 import 'package:pos_mobile_app/bloc/login_bloc/login_states.dart';
+import 'package:pos_mobile_app/models/generic/credentials.dart';
 import 'package:pos_mobile_app/shared/config.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -112,9 +114,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: BlocListener<LoginBloc, LoginState>(
                                   listener: (context, state) {
                                     if (state is LoginProcessing) {
+                                      _mySnackBar(context: context, msg: 'Processing...');
                                     } else if (state is LoginSuccessful) {
+                                      _mySnackBar(context: context, msg: 'Login Successful');
+
                                     } else if (state is LoginFailed) {
-                                    } else if (state is LoginError) {}
+                                      _mySnackBar(context: context, msg: 'Login Failed');
+
+                                    } else if (state is LoginError) {
+                                      _mySnackBar(context: context, msg: state.error);
+
+                                    }
                                   },
                                   child: Form(
                                     key: _formKey,
@@ -125,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.end,
                                       children: <Widget>[
-                                        Row(
+ /*                                       Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
                                           children: [
@@ -187,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               onPressed: null,
                                             )
                                           ],
-                                        ),
+                                        ),*/
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           decoration: BoxDecoration(
@@ -196,10 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       color:
                                                           Colors.grey[100]))),
                                           child: TextFormField(
-                                            enabled: _deviceKeyPresent,
+                                            // enabled: _deviceKeyPresent,
                                             decoration: InputDecoration(
                                               border: InputBorder.none,
-                                              labelText: 'loginModel.hintEmail',
+                                              labelText: 'Username',
                                               labelStyle: TextStyle(
                                                 color: Colors.grey[400],
                                               ),
@@ -212,13 +222,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                               FocusScope.of(context)
                                                   .nextFocus();
                                             },
-                                            validator: (value) {
-                                              if (value.isEmpty ||
-                                                  !value.contains('@')) {
-                                                return errorEmail;
-                                              }
-                                              return null;
-                                            },
+                                            // validator: (value) {
+                                            //   if (value.isEmpty ||
+                                            //       !value.contains('@')) {
+                                            //     return errorEmail;
+                                            //   }
+                                            //   return null;
+                                            // },
                                             controller: email,
                                           ),
                                         ),
@@ -228,11 +238,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                             children: <Widget>[
                                               Positioned(
                                                 child: TextFormField(
-                                                  enabled: _deviceKeyPresent,
+                                                  // enabled: _deviceKeyPresent,
                                                   decoration: InputDecoration(
                                                     border: InputBorder.none,
-                                                    labelText:
-                                                        'loginModel.hintPassword',
+                                                    labelText: 'Password',
                                                     labelStyle: TextStyle(
                                                       color: Colors.grey[400],
                                                     ),
@@ -247,13 +256,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                                         .unfocus();
                                                   },
                                                   controller: password,
-                                                  validator: (value) {
-                                                    if (value.isEmpty ||
-                                                        value.length <= 0) {
-                                                      return errorPassword;
-                                                    }
-                                                    return null;
-                                                  },
+                                                  // validator: (value) {
+                                                  //   if (value.isEmpty ||
+                                                  //       value.length <= 0) {
+                                                  //     return errorPassword;
+                                                  //   }
+                                                  //   return null;
+                                                  // },
                                                 ),
                                               ),
                                               Positioned(
@@ -300,7 +309,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     splashColor: Colors.yellow[100],
-                                    onTap: null,
+                                    onTap: (){
+                                      Credentials _credentials = Credentials(username: email.toString(),
+                                          password: password.toString());
+                                      print('${_credentials.username}\n${_credentials.password}');
+                                      context.read<LoginBloc>().add(LoginCredentials(credentials: _credentials));
+                                    },
                                     child: Center(
                                       child: Text(
                                         'Login',
@@ -326,5 +340,10 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       ),
     );
+  }
+
+  void _mySnackBar({BuildContext context, String msg}){
+    final snackBar = SnackBar(content: Text(msg));
+    Scaffold.of(context).showSnackBar(snackBar);
   }
 }

@@ -21,7 +21,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Expanded(
               child: SizedBox(),
             ),
-            Text('Shift#: ')
+            Text('Shift#: '),
           ],
         ),
         centerTitle: true,

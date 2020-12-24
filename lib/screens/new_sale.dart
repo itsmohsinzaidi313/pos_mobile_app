@@ -189,6 +189,7 @@ class _NewSaleState extends State<NewSale> {
                                           ),
                                         ),
                                       ),
+
                                     ),
                             ),
                           ),
@@ -215,14 +216,18 @@ class _NewSaleState extends State<NewSale> {
                 ),
                 onPressed: () {
                   /*model.order.itemList.length*/ 1 > 0
-                      ? AppTheme.showAlertDialogOK(context,
+                      ? AppTheme.showAlertDialogOK(
+                          context,
                           title: 'Success',
                           message: 'Order saved.',
-                          onOK: () => _onFloatingButtonPressed())
-                      : AppTheme.showAlertDialogOK(context,
+                          onOK: () => _onFloatingButtonPressed(),
+                        )
+                      : AppTheme.showAlertDialogOK(
+                          context,
                           title: 'Failed',
                           message: 'Please add Items to punch order',
-                          onOK: () => Navigator.pop(context));
+                          onOK: () => Navigator.pop(context),
+                        );
                 },
               ),
             ],
@@ -518,8 +523,9 @@ class _NewSaleState extends State<NewSale> {
       );
     });
     return widgets;*/
-    return [];
   }
 
-  void _onFloatingButtonPressed() async {}
+  void _onFloatingButtonPressed() async {
+  }
+
 }

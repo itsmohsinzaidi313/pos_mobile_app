@@ -10,6 +10,16 @@ class _SplashScreenState extends State<SplashScreen> {
   double screenHeight;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    Future.delayed(Duration(seconds: 2),(){
+      Navigator.pushReplacementNamed(context, '/loginScreen');
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
