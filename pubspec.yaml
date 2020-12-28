@@ -23,6 +23,8 @@ dependencies:
   draggable_floating_button: ^0.1.1
   equatable: ^1.2.4
   flutter_bloc: ^6.0.4
+  formz: ^0.3.1
+
 
 
 

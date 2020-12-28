@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile_app/bloc/login_bloc/login_bloc.dart';
-import 'package:pos_mobile_app/bloc/login_bloc/login_events.dart';
-import 'package:pos_mobile_app/bloc/login_bloc/login_states.dart';
-import 'package:pos_mobile_app/models/generic/credentials.dart';
 import 'package:pos_mobile_app/shared/config.dart';
+import 'package:formz/formz.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -17,333 +15,347 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController password = TextEditingController();
   TextEditingController deviceKey = TextEditingController();
 
+  final _usernameFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+
   bool _autoValidate = false;
   bool _obscureText = true;
   bool isLoading = false;
   bool isOnlineDataLoaded = false;
 
-  bool _deviceKeyPresent = false;
   Icon _icon = Icon(Icons.visibility_off);
-  String errorEmail = 'Invalid Email', errorPassword = 'Invalid Password';
+  String errorEmail = '',
+      errorPassword = '';
   Color activeColor = Colors.yellow[700];
+
+  @override
+  initState() {
+    super.initState();
+    _usernameFocusNode.addListener(() {
+      if (!_usernameFocusNode.hasFocus) {
+        context.read<LoginBloc>().add(UsernameUnfocused());
+        FocusScope.of(context).requestFocus(_passwordFocusNode);
+      }
+    });
+    _passwordFocusNode.addListener(() {
+      if (!_passwordFocusNode.hasFocus) {
+        context.read<LoginBloc>().add(PasswordUnfocused());
+      }
+    });
+  }
 
   void _toggle() {
     setState(() {
       _obscureText = !_obscureText;
       _icon =
-          _obscureText ? Icon(Icons.visibility_off) : Icon(Icons.visibility);
+      _obscureText ? Icon(Icons.visibility_off) : Icon(Icons.visibility);
     });
   }
 
   @override
   void dispose() {
     super.dispose();
+    _usernameFocusNode.dispose();
+    _passwordFocusNode.dispose();
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: SafeArea(
-              child: Container(
-                // margin: EdgeInsets.all(8.0),
-                height: Config.getDeviceHeight(context),
-                width: Config.getDeviceWidth(context),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      height: Config.getDeviceHeight(context),
-                      width: Config.getDeviceWidth(context) * 0.4,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.amber,
-                            Colors.redAccent,
-                          ],
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
+      body: BlocListener<LoginBloc, MyLoginState>(
+        listener: (context, state) {
+          if (state.status.isSubmissionSuccess) {
+            Scaffold.of(context).hideCurrentSnackBar();
+            showDialog<void>(
+              context: context,
+              builder: (_) => SuccessDialog(),
+            );
+          }
+          if (state.status.isSubmissionInProgress) {
+            Scaffold.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Submitting...')),
+              );
+          }
+          if (state is LoginError) {
+            Scaffold.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(content: Text('ERROR: ${state.error}')),
+              );
+          }
+        },
+        child: SingleChildScrollView(
+          child: SafeArea(
+            child: Container(
+              // margin: EdgeInsets.all(8.0),
+              height: Config.getDeviceHeight(context),
+              width: Config.getDeviceWidth(context),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    height: Config.getDeviceHeight(context),
+                    width: Config.getDeviceWidth(context) * 0.4,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.amber,
+                          Colors.redAccent,
+                        ],
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                      ),
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.horizontal(
+                        right:
+                        Radius.circular(Config.getDeviceHeight(context)),
+                      ),
+                      color: Colors.amber,
+                      image: DecorationImage(
+                        image: AssetImage(
+                          'assets/dt1.png',
                         ),
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.horizontal(
-                          right:
-                              Radius.circular(Config.getDeviceHeight(context)),
-                        ),
-                        color: Colors.amber,
-                        image: DecorationImage(
-                          image: AssetImage(
-                            'assets/logo1.png',
-                          ),
-                          fit: BoxFit.fitWidth,
-                        ),
+                        fit: BoxFit.contain,
                       ),
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(30.0),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        offset: Offset(10, 10),
-                                        color: Colors.grey[300],
-                                        blurRadius: 20),
-                                    BoxShadow(
-                                        offset: Offset(-10, -10),
-                                        color: Colors.grey[300],
-                                        blurRadius: 20)
-                                  ],
-                                ),
-                                child: BlocListener<LoginBloc, LoginState>(
-                                  listener: (context, state) {
-                                    if (state is LoginProcessing) {
-                                      _mySnackBar(context: context, msg: 'Processing...');
-                                    } else if (state is LoginSuccessful) {
-                                      _mySnackBar(context: context, msg: 'Login Successful');
-
-                                    } else if (state is LoginFailed) {
-                                      _mySnackBar(context: context, msg: 'Login Failed');
-
-                                    } else if (state is LoginError) {
-                                      _mySnackBar(context: context, msg: state.error);
-
-                                    }
-                                  },
-                                  child: Form(
-                                    key: _formKey,
-                                    autovalidate: _autoValidate,
-                                    autovalidateMode:
-                                        AutovalidateMode.onUserInteraction,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(30.0),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                      offset: Offset(10, 10),
+                                      color: Colors.grey[300],
+                                      blurRadius: 20),
+                                  BoxShadow(
+                                      offset: Offset(-10, -10),
+                                      color: Colors.grey[300],
+                                      blurRadius: 20)
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                                color: Colors.grey[100]))),
+                                    child: UsernameInput(
+                                      focusNode: _usernameFocusNode,),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: Stack(
                                       children: <Widget>[
- /*                                       Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              'Config.activeStatus',
-                                              style:
-                                                  GoogleFonts.ubuntuCondensed(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 13,
-                                                      letterSpacing: 1.0,
-                                                      color: activeColor),
-                                            ),
-                                            Switch(
-                                              // value: Config.isSwitched,
-                                              // onChanged: _onSwitchTap,
-                                              activeTrackColor:
-                                                  Colors.yellowAccent[600],
-                                              activeColor: Colors.yellow[700],
-                                              inactiveTrackColor:
-                                                  Colors.grey[200],
-                                              inactiveThumbColor: Colors.grey,
-                                            ),
-                                          ],
+                                        Positioned(
+                                          child: PasswordInput(
+                                            focusNode: _passwordFocusNode,
+                                            obscureText: _obscureText,),
                                         ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Container(
-                                                padding: EdgeInsets.all(5),
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        bottom: BorderSide(
-                                                            color: Colors
-                                                                .grey[100]))),
-                                                child: TextField(
-                                                  enabled: !_deviceKeyPresent,
-                                                  decoration: InputDecoration(
-                                                    border: InputBorder.none,
-                                                    labelText: 'Device Key',
-                                                    labelStyle: TextStyle(
-                                                      color: Colors.grey[400],
-                                                    ),
-                                                    errorText:
-                                                        deviceKey.text != ''
-                                                            ? null
-                                                            : 'Required',
-                                                  ),
-                                                  textInputAction:
-                                                      TextInputAction.next,
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  controller: deviceKey,
-                                                ),
-                                              ),
-                                            ),
-                                            FlatButton(
-                                              child: Text('SUBMIT'),
-                                              onPressed: null,
-                                            )
-                                          ],
-                                        ),*/
-                                        Container(
-                                          padding: EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  bottom: BorderSide(
-                                                      color:
-                                                          Colors.grey[100]))),
-                                          child: TextFormField(
-                                            // enabled: _deviceKeyPresent,
-                                            decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              labelText: 'Username',
-                                              labelStyle: TextStyle(
-                                                color: Colors.grey[400],
-                                              ),
-                                            ),
-                                            textInputAction:
-                                                TextInputAction.next,
-                                            keyboardType:
-                                                TextInputType.emailAddress,
-                                            onFieldSubmitted: (value) {
-                                              FocusScope.of(context)
-                                                  .nextFocus();
-                                            },
-                                            // validator: (value) {
-                                            //   if (value.isEmpty ||
-                                            //       !value.contains('@')) {
-                                            //     return errorEmail;
-                                            //   }
-                                            //   return null;
-                                            // },
-                                            controller: email,
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.all(5),
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Positioned(
-                                                child: TextFormField(
-                                                  // enabled: _deviceKeyPresent,
-                                                  decoration: InputDecoration(
-                                                    border: InputBorder.none,
-                                                    labelText: 'Password',
-                                                    labelStyle: TextStyle(
-                                                      color: Colors.grey[400],
-                                                    ),
-                                                  ),
-                                                  obscureText: _obscureText,
-                                                  textInputAction:
-                                                      TextInputAction.done,
-                                                  keyboardType: TextInputType
-                                                      .visiblePassword,
-                                                  onFieldSubmitted: (value) {
-                                                    FocusScope.of(context)
-                                                        .unfocus();
-                                                  },
-                                                  controller: password,
-                                                  // validator: (value) {
-                                                  //   if (value.isEmpty ||
-                                                  //       value.length <= 0) {
-                                                  //     return errorPassword;
-                                                  //   }
-                                                  //   return null;
-                                                  // },
-                                                ),
-                                              ),
-                                              Positioned(
-                                                right: 5,
-                                                child: IconButton(
-                                                  icon: _icon,
-                                                  color: Colors.grey,
-                                                  onPressed: _toggle,
-                                                ),
-                                              ),
-                                            ],
+                                        Positioned(
+                                          right: 5,
+                                          child: IconButton(
+                                            icon: _icon,
+                                            color: Colors.grey,
+                                            onPressed: _toggle,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Container(
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Colors.redAccent,
-                                      Colors.amber,
-                                    ],
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        offset: Offset(10, 10),
-                                        color: Colors.grey[300],
-                                        blurRadius: 20),
-                                    BoxShadow(
-                                        offset: Offset(-10, -10),
-                                        color: Colors.grey[300],
-                                        blurRadius: 20)
-                                  ],
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    splashColor: Colors.yellow[100],
-                                    onTap: (){
-                                      Credentials _credentials = Credentials(username: email.toString(),
-                                          password: password.toString());
-                                      print('${_credentials.username}\n${_credentials.password}');
-                                      context.read<LoginBloc>().add(LoginCredentials(credentials: _credentials));
-                                    },
-                                    child: Center(
-                                      child: Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(height: 30),
+                            SubmitButton(),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
-  void _mySnackBar({BuildContext context, String msg}){
+  void _mySnackBar({BuildContext context, String msg}) {
     final snackBar = SnackBar(content: Text(msg));
     Scaffold.of(context).showSnackBar(snackBar);
+  }
+}
+
+class UsernameInput extends StatelessWidget {
+  const UsernameInput({Key key, this.focusNode}) : super(key: key);
+
+  final FocusNode focusNode;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, MyLoginState>(
+      builder: (context, state) {
+        return TextFormField(
+          initialValue: state.username.value,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            icon: const Icon(Icons.email),
+            labelText: 'Username',
+            helperText: 'A complete, valid username e.g. admin',
+            errorText: state.username.invalid
+                ? 'Please ensure the username entered is valid'
+                : null,
+          ),
+          keyboardType: TextInputType.name,
+          onChanged: (value) {
+            context.read<LoginBloc>().add(UsernameChanged(username: value));
+          },
+          textInputAction: TextInputAction.next,
+        );
+      },
+    );
+  }
+}
+
+class PasswordInput extends StatelessWidget {
+  const PasswordInput({Key key, this.focusNode, this.obscureText})
+      : super(key: key);
+
+  final FocusNode focusNode;
+  final bool obscureText;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, MyLoginState>(
+      builder: (context, state) {
+        return TextFormField(
+          initialValue: state.password.value,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            icon: const Icon(Icons.lock),
+            labelText: 'Password',
+            helperText: 'Please enter valid password',
+            helperMaxLines: 2,
+            errorMaxLines: 2,
+            errorText: state.password.invalid
+                ? 'Please ensure the password entered is valid'
+                : null,
+          ),
+          keyboardType: TextInputType.text,
+          obscureText: obscureText,
+          onChanged: (value) {
+            context.read<LoginBloc>().add(PasswordChanged(password: value));
+          },
+          textInputAction: TextInputAction.done,
+        );
+      },
+    );
+  }
+}
+
+class SubmitButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, MyLoginState>(
+      buildWhen: (previous, current) => previous.status != current.status,
+      builder: (context, state) {
+        return Container(
+          height: 50,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            gradient: LinearGradient(
+              colors: [
+                Colors.redAccent,
+                Colors.amber,
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                  offset: Offset(10, 10),
+                  color: Colors.grey[300],
+                  blurRadius: 20),
+              BoxShadow(
+                  offset: Offset(-10, -10),
+                  color: Colors.grey[300],
+                  blurRadius: 20)
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              splashColor: Colors.yellow[100],
+              onTap: state.status.isValidated
+                  ? () => context.read<LoginBloc>().add(FormSubmitted())
+                  : null,
+              child: Center(
+                child: Text(
+                  'Login',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class SuccessDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                const Icon(Icons.info),
+                const Flexible(
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      'Form Submitted Successfully!',
+                      softWrap: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            RaisedButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -3,13 +3,15 @@ import 'package:pos_mobile_app/models/generic/credentials.dart';
 import 'package:pos_mobile_app/models/generic/response_detail.dart';
 
 abstract class LoginRepo {
-  Future<ResponseDetail> authenticateUser({@required Credentials credentials});
+  Future<ResponseDetail> authenticateUser({@required String username, String password});
 }
 
 class LoginService extends LoginRepo {
+
   @override
-  Future<ResponseDetail> authenticateUser({Credentials credentials}) async {
-    //TODO: Server hitting code here
-    return ResponseDetail(status: true, message: '');
+  Future<ResponseDetail> authenticateUser({String username, String password}) {
+    // TODO: implement authenticateUser
+    throw UnimplementedError();
   }
+
 }

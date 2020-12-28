@@ -1,3 +1,5 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +14,7 @@ import 'bloc/login_bloc/login_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  EquatableConfig.stringify = kDebugMode;
   //Screen orientation set to landscape
   SystemChrome.setPreferredOrientations(
           [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
