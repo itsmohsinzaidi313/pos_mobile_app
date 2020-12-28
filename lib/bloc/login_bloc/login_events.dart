@@ -30,8 +30,8 @@ class PasswordUnfocused extends LoginEvent{}
 
 class FormSubmitted extends LoginEvent{}
 
-class LoginCredentials extends LoginEvent {
+/*class LoginCredentials extends LoginEvent {
 
   final Credentials credentials;
   LoginCredentials({@required this.credentials});
-}
+}*/

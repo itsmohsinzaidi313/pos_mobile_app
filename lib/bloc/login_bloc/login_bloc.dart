@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:pos_mobile_app/data_provider/login_repo/login_svc.dart';
-import 'package:pos_mobile_app/models/generic/credentials.dart';
 import 'package:pos_mobile_app/models/generic/response_detail.dart';
 import 'package:pos_mobile_app/models/model_login/username_password.dart';
 

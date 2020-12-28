@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:pos_mobile_app/models/generic/credentials.dart';
 import 'package:pos_mobile_app/models/generic/response_detail.dart';
 
 abstract class LoginRepo {
