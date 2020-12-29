@@ -10,12 +10,6 @@ abstract class ShiftEvent extends Equatable{
 
 class GettingShifts extends ShiftEvent{
 
-  final List<String> shifts;
-
-  GettingShifts({ this.shifts });
-
-  @override
-  List<Object> get props => [shifts];
 }
 
 class ShiftChanged extends ShiftEvent{
@@ -42,4 +36,8 @@ class ShiftUnfocused extends ShiftEvent{}
 
 class AmountUnfocused extends ShiftEvent{}
 
-class FormSubmitted extends ShiftEvent{}
+class ShiftSubmitted extends ShiftEvent{
+
+  final int layoutType;
+  ShiftSubmitted({ this.layoutType});
+}

@@ -73,8 +73,9 @@ class _LoginScreenState extends State<LoginScreen> {
             Scaffold.of(context).hideCurrentSnackBar();
             showDialog<void>(
               context: context,
-              builder: (_) => SuccessDialog(),
+              builder: (_) => MyDialog(),
             );
+            Navigator.pushReplacementNamed(context, '/shiftScreen');
           }
           if (state.status.isSubmissionInProgress) {
             Scaffold.of(context)
@@ -322,27 +323,33 @@ class SubmitButton extends StatelessWidget {
   }
 }
 
-class SuccessDialog extends StatelessWidget {
+class MyDialog extends StatelessWidget {
+
+  final String message;
+  final BuildContext mContext;
+
+  MyDialog({ this.message, this.mContext });
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext mContext) {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(8.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Row(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                const Icon(Icons.info),
-                const Flexible(
+                 Icon(Icons.info),
+                 Flexible(
                   child: Padding(
                     padding: EdgeInsets.all(10),
                     child: Text(
-                      'Form Submitted Successfully!',
+                      message,
                       softWrap: true,
                     ),
                   ),
@@ -350,8 +357,8 @@ class SuccessDialog extends StatelessWidget {
               ],
             ),
             RaisedButton(
-              child: const Text('OK'),
-              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+              onPressed: () => Navigator.of(mContext).pop(),
             ),
           ],
         ),

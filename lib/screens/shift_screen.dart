@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
+import 'package:pos_mobile_app/bloc/shift_bloc/shift_bloc.dart';
+import 'package:pos_mobile_app/screens/login_screen.dart';
 
 class ShiftScreen extends StatefulWidget {
   @override
@@ -6,6 +10,31 @@ class ShiftScreen extends StatefulWidget {
 }
 
 class _ShiftScreen extends State<ShiftScreen> {
+
+  final _dropdownFocusNode = FocusNode();
+  final _amountFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    context.read<ShiftBloc>().add(GettingShifts());
+
+    _dropdownFocusNode.addListener(() {
+      if (!_dropdownFocusNode.hasFocus) {
+        context.read<ShiftBloc>().add(ShiftUnfocused());
+        FocusScope.of(context).requestFocus(_amountFocusNode);
+      }
+    });
+
+    _amountFocusNode.addListener(() {
+      if (!_amountFocusNode.hasFocus) {
+        context.read<ShiftBloc>().add(AmountUnfocused());
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,31 +45,65 @@ class _ShiftScreen extends State<ShiftScreen> {
         backgroundColor: Colors.redAccent,
         elevation: 0.0,
       ),
-      body: Center(
-        child: Container(
-          child: SingleChildScrollView(
-            child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: CircleAvatar(
-                    radius: 90.0,
-                    backgroundColor: Colors.yellow[600],
+      body: BlocListener<ShiftBloc, MyShiftState>(
+        // listenWhen: (previousState, currentState) =>
+        // (previousState.status != currentState.status),
+        listener: (context, state) {
+          if(state.status.isSubmissionInProgress){
+            Scaffold.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Progressing...')),
+              );
+          }
+          if(state.status.isSubmissionSuccess){
+            Scaffold.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Submission Successful!')),
+              );
+            Navigator.pushReplacementNamed(context, '/dashboardScreen');
+
+          }
+          if(state.status.isSubmissionFailure){
+            Scaffold.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Submission Failed!')),
+              );
+          }
+          if(state is ShiftError){
+            Scaffold.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                 SnackBar(content: Text('${state.error.toString()}')),
+              );
+          }
+        },
+        child: Center(
+          child: Container(
+            child: SingleChildScrollView(
+              child: Column(children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
                     child: CircleAvatar(
-                      radius: 80.0,
-                      backgroundImage: AssetImage('assets/money-bag.jpg'),
+                      radius: 90.0,
+                      backgroundColor: Colors.yellow[600],
+                      child: CircleAvatar(
+                        radius: 80.0,
+                        backgroundImage: AssetImage('assets/money-bag.jpg'),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              bodyLayoutController(layoutType: null)
-            ]),
+                bodyLayoutController(layoutType: 1),
+              ]),
+            ),
           ),
         ),
       ),
-      floatingActionButton: floatingButtonLayoutController(
-        layoutType: null,
-      ),
+      floatingActionButton: FloatingButton(layoutType: 1,),
     );
   }
 
@@ -70,68 +133,21 @@ class _ShiftScreen extends State<ShiftScreen> {
                       child: Column(
                         children: [
                           Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                'Select Shift',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.grey,
-                                ),
-                              )),
-                          DropdownButton<String>(
-                            icon: Icon(Icons.arrow_drop_down_circle),
-                            iconSize: 24,
-                            elevation: 16,
-                            isExpanded: true,
-                            style: TextStyle(
-                              color: Colors.grey[700],
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Select Shift',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                              ),
                             ),
-                            onChanged: (newValue) {
-                              setState(() {
-                                // _dropdown = newValue;
-                              });
-                            },
-                            // items: this.model.shiftList,
                           ),
+                          DropdownSelection(focusNode: _dropdownFocusNode),
                         ],
                       ),
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          labelText: "Amount",
-                          prefixIcon: Icon(
-                            Icons.attach_money,
-                            size: 20,
-                            color: Colors.amber,
-                          ),
-                          hintText: "1000",
-                          hintStyle: TextStyle(
-                            color: Colors.grey[300],
-                          ),
-                          labelStyle: TextStyle(
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                        textInputAction: TextInputAction.done,
-                        keyboardType: TextInputType.number,
-                        onFieldSubmitted: (value) {
-                          FocusScope.of(context).unfocus();
-                        },
-                        validator: (value) {
-                          if (value.isEmpty ||
-                              value.length < 0 ||
-                              int.parse(value) <= 0) {
-                            return 'Invalid Amount';
-                          }
-                          return null;
-                        },
-                        // controller: openingAmount,
-                      ),
-                    ),
+                    AmountInput(focusNode: _amountFocusNode),
                   ],
                 ),
               ),
@@ -165,7 +181,7 @@ class _ShiftScreen extends State<ShiftScreen> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderSide:
-                              BorderSide(color: Colors.amberAccent, width: 1),
+                          BorderSide(color: Colors.amberAccent, width: 1),
                         ),
                         hintText: 'Closing Amount',
                         // errorText: checkField ? errorMessage : null),
@@ -186,6 +202,7 @@ class _ShiftScreen extends State<ShiftScreen> {
     }
   }
 
+/*
   Widget floatingButtonLayoutController({int layoutType}) {
     switch (layoutType) {
       case 1:
@@ -206,5 +223,110 @@ class _ShiftScreen extends State<ShiftScreen> {
         return Container();
         break;
     }
+  }
+*/
+}
+
+class FloatingButton extends StatelessWidget {
+
+  final int layoutType;
+
+  FloatingButton({ this.layoutType});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ShiftBloc, MyShiftState>(
+      builder: (context, state) {
+        return FloatingActionButton(
+          onPressed: state.status.isValidated ?
+              () => context.read<ShiftBloc>()
+                  .add(ShiftSubmitted(layoutType: layoutType)) : null,
+          child: Icon(
+            layoutType == 1 ? Icons.check : Icons.close,
+            color: Colors.white,
+          ),
+          backgroundColor: Colors.yellow[600],
+        );
+      },
+    );
+  }
+}
+
+
+class AmountInput extends StatelessWidget {
+
+  final FocusNode focusNode;
+
+  AmountInput({this.focusNode});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ShiftBloc, MyShiftState>(
+      builder: (context, state) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: TextFormField(
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              labelText: "Amount",
+              errorText: state.amount.invalid
+                  ? 'Please ensure that the amount entered is valid'
+                  : null,
+              prefixIcon: Icon(
+                Icons.attach_money,
+                size: 20,
+                color: Colors.amber,
+              ),
+              hintText: "1000",
+              helperText: 'Amount value must be valid e.g, 1000',
+              hintStyle: TextStyle(
+                color: Colors.grey[300],
+              ),
+              labelStyle: TextStyle(
+                color: Colors.grey[400],
+              ),
+            ),
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              context.read<ShiftBloc>().add(AmountChanged(amount: value));
+            },
+            focusNode: focusNode,
+            autofocus: false,
+            // controller: openingAmount,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class DropdownSelection extends StatelessWidget {
+
+  final FocusNode focusNode;
+
+  DropdownSelection({this.focusNode});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ShiftBloc, MyShiftState>(
+      builder: (context, state) {
+        return DropdownButton<String>(
+          icon: Icon(Icons.arrow_drop_down_circle),
+          iconSize: 24,
+          elevation: 16,
+          value: state.shift.value,
+          focusNode: focusNode,
+          isExpanded: true,
+          style: TextStyle(
+            color: Colors.grey[700],
+          ),
+          onChanged: (newValue) {
+            context.read<ShiftBloc>().add(ShiftChanged(shift: newValue));
+          },
+          items: state.dropDownMenuList,
+        );
+      },
+    );
   }
 }

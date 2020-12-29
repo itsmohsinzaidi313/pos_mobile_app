@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pos_mobile_app/bloc/shift_bloc/shift_bloc.dart';
 import 'package:pos_mobile_app/data_provider/login_repo/login_svc.dart';
+import 'package:pos_mobile_app/data_provider/shift_repo/shift_svc.dart';
 import 'package:pos_mobile_app/screens/dashboard_screen.dart';
 import 'package:pos_mobile_app/screens/login_screen.dart';
 import 'package:pos_mobile_app/screens/settings_screen.dart';
@@ -19,8 +21,15 @@ void main() {
   SystemChrome.setPreferredOrientations(
           [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
       .then((_) {
-    runApp(BlocProvider(
-      create: (context) => LoginBloc(loginRepo: LoginService()),
+    runApp(MultiBlocProvider(
+      providers: [
+        BlocProvider<LoginBloc>(
+          create: (context) => LoginBloc(loginRepo: LoginService()),
+        ),
+        BlocProvider<ShiftBloc>(
+          create: (context) => ShiftBloc(shiftRepo: ShiftService()),
+        ),
+      ],
       child: new MaterialApp(
         title: 'POS',
         initialRoute: '/splashScreen',
