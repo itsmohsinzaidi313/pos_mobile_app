@@ -1,3 +1,4 @@
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:pos_mobile_app/models/generic/dashboard_item_model.dart';
 import 'package:pos_mobile_app/screens/list_template/dashboard_list_items.dart';
@@ -19,30 +20,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.red,
         elevation: 0.0,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: SizedBox(),
-            ),
+            Text('Dashboard'),
             Text('Shift#: '),
           ],
         ),
         centerTitle: true,
       ),
-      body: GridView.builder(
-        itemCount: DashboardItemModel().dashboardItemModel.length,
-        shrinkWrap: true,
-        gridDelegate:
-        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-        itemBuilder: (context, position) {
-          return DashboardListItem(
-            dashboardItem : DashboardItemModel().dashboardItemModel[position],
-             height : 250.0,
-            width : 250.0,
-                onTap : () {
-              print(DashboardItemModel().dashboardItemModel[position].name);
-            },
-          );
-        },
+      body: DoubleBackToCloseApp(
+        snackBar: SnackBar(
+          content: Text('Tap again to exit the screen'),
+        ),
+        child: GridView.builder(
+          itemCount: DashboardItemModel().dashboardItemModel.length,
+          shrinkWrap: true,
+          gridDelegate:
+          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+          itemBuilder: (context, position) {
+            return DashboardListItem(
+              dashboardItem : DashboardItemModel().dashboardItemModel[position],
+               height : 250.0,
+              width : 250.0,
+                  onTap : () {
+                print(DashboardItemModel().dashboardItemModel[position].name);
+              },
+            );
+          },
+        ),
       ),
     );
   }

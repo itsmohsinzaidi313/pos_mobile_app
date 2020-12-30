@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:pos_mobile_app/bloc/shift_bloc/shift_bloc.dart';
-import 'package:pos_mobile_app/screens/login_screen.dart';
 
 class ShiftScreen extends StatefulWidget {
   @override
@@ -16,7 +15,7 @@ class _ShiftScreen extends State<ShiftScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // TODO: implement initState/**/
     super.initState();
 
     context.read<ShiftBloc>().add(GettingShifts());
@@ -46,8 +45,6 @@ class _ShiftScreen extends State<ShiftScreen> {
         elevation: 0.0,
       ),
       body: BlocListener<ShiftBloc, MyShiftState>(
-        // listenWhen: (previousState, currentState) =>
-        // (previousState.status != currentState.status),
         listener: (context, state) {
           if(state.status.isSubmissionInProgress){
             Scaffold.of(context)
@@ -57,11 +54,6 @@ class _ShiftScreen extends State<ShiftScreen> {
               );
           }
           if(state.status.isSubmissionSuccess){
-            Scaffold.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                const SnackBar(content: Text('Submission Successful!')),
-              );
             Navigator.pushReplacementNamed(context, '/dashboardScreen');
 
           }

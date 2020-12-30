@@ -70,11 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocListener<LoginBloc, MyLoginState>(
         listener: (context, state) {
           if (state.status.isSubmissionSuccess) {
-            Scaffold.of(context).hideCurrentSnackBar();
-            showDialog<void>(
-              context: context,
-              builder: (_) => MyDialog(),
-            );
             Navigator.pushReplacementNamed(context, '/shiftScreen');
           }
           if (state.status.isSubmissionInProgress) {

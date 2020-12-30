@@ -13,7 +13,7 @@ part 'shift_states.dart';
 
 class ShiftBloc extends Bloc<ShiftEvent, MyShiftState> {
   final ShiftRepo shiftRepo;
-  List<DropdownMenuItem<String>> _list = [];
+  List<DropdownMenuItem<String>> _list;
 
   ShiftBloc({@required this.shiftRepo}) : super(MyShiftState());
 
@@ -29,13 +29,13 @@ class ShiftBloc extends Bloc<ShiftEvent, MyShiftState> {
         yield state.copyWith(status: Formz.validate([state.shift, state.amount]));
         List<String> _shifts = shiftRepo.gettingShifts();
         yield state.copyWith(
-            status: FormzStatus.submissionSuccess,
+            status: Formz.validate([Shift.dirty(_shifts.first), state.amount]),
             dropDownMenuList: mapListToDropdownMenuItemList(list: _shifts),
             shift: Shift.dirty(_shifts.first).valid
                 ? Shift.dirty(_shifts.first)
                 : Shift.pure(_shifts.first));
       } catch (e) {
-        yield state.copyWith(status: FormzStatus.submissionFailure);
+        yield state.copyWith(status: Formz.validate([state.shift, state.amount]),);
         yield ShiftError(error: e.toString());
       }
     } else if (event is ShiftChanged) {
@@ -82,6 +82,7 @@ class ShiftBloc extends Bloc<ShiftEvent, MyShiftState> {
 
   List<DropdownMenuItem<String>> mapListToDropdownMenuItemList(
       {@required List<String> list}) {
+    _list = [];
     list.forEach((element) {
       _list.add(DropdownMenuItem(
         value: element,
